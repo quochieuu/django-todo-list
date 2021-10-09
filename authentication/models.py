@@ -4,6 +4,7 @@ from helpers.models import TrackingModel
 from django.contrib.auth.models import (PermissionsMixin, AbstractBaseUser, UserManager)
 from django.utils.translation import gettext_lazy as _ 
 from django.utils import timezone
+from datetime import datetime
 
 class MyUserManager(UserManager):
     def _create_user(self, username, email, password, **extra_fields):
@@ -28,16 +29,19 @@ class MyUserManager(UserManager):
 
     def create_user(self, username, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
-        extra_fields.setdefault('is_supperuser', False)
+        extra_fields.setdefault('is_superuser', False)
+        extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('email_verified', False)
+        extra_fields.setdefault('date_joined', datetime.now())
         return self._create_user(username, email, password, **extra_fields)
 
     def create_superuser(self, username, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_supperuser', True)
+        extra_fields.setdefault('is_superuser', True)
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff = True.')
-        if extra_fields.get('is_supperuser') is not True:
+        if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_supperuser = True.')
 
         return self._create_user(username, email, password, **extra_fields)
@@ -50,9 +54,10 @@ class User(AbstractBaseUser, PermissionsMixin, TrackingModel):
     last_name = models.CharField(max_length=150, blank=True)
     email = models.EmailField(_('email address'), blank=False, unique=True)
     is_staff = models.BooleanField()
-    is_active = models.BooleanField()
-    date_joined = models.DateTimeField()
-    email_verified = models.BooleanField()
+    is_superuser = models.BooleanField()
+    is_active = models.BooleanField(blank=True)
+    date_joined = models.DateTimeField(blank=True)
+    email_verified = models.BooleanField(blank=True)
 
     objects = MyUserManager()
 
