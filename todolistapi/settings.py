@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_filters',
     'todos',
     'drf_yasg',
+    'book',
 ]
 
 MIDDLEWARE = [
